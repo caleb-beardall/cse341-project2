@@ -1,0 +1,62 @@
+// LOCALHOST
+### READ all customers
+GET http://localhost:3000/customers
+
+### READ customer by id
+GET http://localhost:3000/customers/6918e0dc8b6faee1d2b68560
+
+### CREATE customer
+POST http://localhost:3000/customers HTTP/1.1
+content-type: application/json
+
+{
+    "firstName": "James",
+    "lastName": "Smith",
+    "email": "james.smith@example.com",
+    "isSubscribed": true
+}
+
+### UPDATE customer
+PUT http://localhost:3000/customers/6918e0dc8b6faee1d2b68560 HTTP/1.1
+content-type: application/json
+
+{
+    "firstName":"Mary",
+    "lastName":"Johnson",
+    "email":"mary.johnson@example.com",
+    "isSubscribed": false
+}
+
+### DELETE customer
+DELETE http://localhost:3000/customers/6918e0dc8b6faee1d2b68560 HTTP/1.1
+
+### READ all products
+GET http://localhost:3000/products
+
+### READ product by id
+GET http://localhost:3000/products/6918f8bc796e86ad2e85c5f8
+
+### CREATE product
+POST http://localhost:3000/products HTTP/1.1
+content-type: application/json
+
+{
+    "name": "iPhone Air",
+    "category": "phone",
+    "price": "999",
+    "isInStock": true
+}
+
+### UPDATE product
+PUT http://localhost:3000/products/6918f8bc796e86ad2e85c5f8 HTTP/1.1
+content-type: application/json
+
+{
+    "name": "iPhone 17 Pro",
+    "category": "phone",
+    "price": "1099",
+    "isInStock": true
+}
+
+### DELETE product
+DELETE http://localhost:3000/products/6918f905796e86ad2e85c5fd HTTP/1.1
