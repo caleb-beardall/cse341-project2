@@ -1,103 +1,126 @@
-const mongoose = require('mongoose');
-
-const productSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    category: {
-        type: String,
-        enum: ['laptop', 'desktop', 'phone', 'tablet'],
-        required: true
-    },
-    price: {
-        type: Number,
-        min: 0,
-        required: true
-    },
-    isInStock: {
-        type: Boolean,
-        required: true
-    }
-});
-
-const Product = mongoose.model('Product', productSchema);
+const Product = require('../models/product');
 
 // READ
 const getAllProducts = async (req, res) => {
     //#swagger.tags=['Products']
-    const products = await Product.find();
-    res.send(products);
+    try {
+        const products = await Product.find();
+        res.send(products);
+    } catch (err) {
+        res.status(500).send('Error retrieving products.');
+    }
 };
 
 const getProduct = async (req, res) => {
     //#swagger.tags=['Products']
-    const product = await Product.findById(req.params.id);
+    try {
+        const product = await Product.findById(req.params.id);
 
-    if (!product) return res.status(404).send('The product with the given ID was not found.');
+        if (!product)
+            return res.status(404).send('Product not found.');
 
-    res.send(product);
+        res.send(product);
+    } catch (err) {
+        res.status(500).send('Error retrieving product.');
+    }
 };
 
 // CREATE
 const createProduct = async (req, res) => {
     //#swagger.tags=['Products']
 
-    // const { error } = validateCustomer(req.body);
-    // if (error) return res.status(400).send(error.details[0].message);
-    
-    let product = new Product({
-        name: req.body.name,
-        category: req.body.category,
-        price: req.body.price,
-        isInStock: req.body.isInStock
-    });
-    product = await product.save();
+    try {
+        if (
+            !req.body.name ||
+            !req.body.category ||
+            req.body.price === undefined ||
+            typeof req.body.isInStock !== 'boolean'
+        ) {
+            return res.status(400).send('Missing or invalid required fields.');
+        }
 
-    res.send(product);
+        const validCategories = ['laptop', 'desktop', 'phone', 'tablet'];
+        if (!validCategories.includes(req.body.category)) {
+            return res.status(400).send('Invalid category.');
+        }
+
+        if (typeof req.body.price !== 'number' || req.body.price < 0) {
+            return res.status(400).send('Price must be a number >= 0.');
+        }
+
+        let product = new Product({
+            name: req.body.name,
+            category: req.body.category,
+            price: req.body.price,
+            isInStock: req.body.isInStock
+        });
+
+        product = await product.save();
+        res.status(201).send(product);
+
+    } catch (err) {
+        res.status(500).send('Error creating product.');
+    }
 };
 
 // UPDATE
 const updateProduct = async (req, res) => {
     //#swagger.tags=['Products']
 
-    // const { error } = validateCustomer(req.body);
-    // if (error) return res.status(400).send(error.details[0].message);
+    try {
+        if (
+            !req.body.name ||
+            !req.body.category ||
+            req.body.price === undefined ||
+            typeof req.body.isInStock !== 'boolean'
+        ) {
+            return res.status(400).send('Missing or invalid required fields.');
+        }
 
-    const product = await Product.findByIdAndUpdate(
-        req.params.id,
-        {
-            name: req.body.name,
-            category: req.body.category,
-            price: req.body.price,
-            isInStock: req.body.isInStock
-        },
-        {
-            new: true
-        });
+        const validCategories = ['laptop', 'desktop', 'phone', 'tablet'];
+        if (!validCategories.includes(req.body.category)) {
+            return res.status(400).send('Invalid category.');
+        }
 
-    if (!product) return res.status(404).send('The product with the given ID was not found.');
+        if (typeof req.body.price !== 'number' || req.body.price < 0) {
+            return res.status(400).send('Price must be a number >= 0.');
+        }
 
-    res.send(product);
+        const product = await Product.findByIdAndUpdate(
+            req.params.id,
+            {
+                name: req.body.name,
+                category: req.body.category,
+                price: req.body.price,
+                isInStock: req.body.isInStock
+            },
+            { new: true }
+        );
+
+        if (!product)
+            return res.status(404).send('Product not found.');
+
+        res.send(product);
+
+    } catch (err) {
+        res.status(500).send('Error updating product.');
+    }
 };
 
 // DELETE
 const deleteProduct = async (req, res) => {
     //#swagger.tags=['Products']
-    
-    const product = await Product.findByIdAndDelete(req.params.id);
+    try {
+        const product = await Product.findByIdAndDelete(req.params.id);
 
-    if (!product) return res.status(404).send('The product with the given ID was not found.');
+        if (!product)
+            return res.status(404).send('Product not found.');
 
-    res.send(product);
+        res.send(product);
+    } catch (err) {
+        res.status(500).send('Error deleting product.');
+    }
 };
-
-// function validateGenre(genre) {
-//     const schema = Joi.object({
-//         name: Joi.string().min(3).required()
-//     });
-//     return schema.validate(genre);
-// }
 
 module.exports = {
     getAllProducts,

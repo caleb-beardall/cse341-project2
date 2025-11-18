@@ -1,6 +1,7 @@
 const express = require('express');
 const mongodb = require('./db/connect');
 const bodyParser = require('body-parser');
+const error = require('./middleware/error');
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -12,6 +13,9 @@ app
         next();
     })
     .use('/', require('./routes'));
+
+// Catch 500 errors
+app.use(error);
 
 mongodb.initDb((err) => {
     if (err) {

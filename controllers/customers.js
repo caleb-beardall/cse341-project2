@@ -1,100 +1,102 @@
-const mongoose = require('mongoose');
-
-const customerSchema = new mongoose.Schema({
-    firstName: {
-        type: String,
-        required: true
-    },
-    lastName: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true
-    },
-    isSubscribed: {
-        type: Boolean,
-        required: true
-    }
-});
-
-const Customer = mongoose.model('Customer', customerSchema);
+const Customer = require('../models/customer');
 
 // READ
 const getAllCustomers = async (req, res) => {
     //#swagger.tags=['Customers']
-    const customers = await Customer.find();
-    res.send(customers);
+
+    try {
+        const customers = await Customer.find();
+        res.send(customers);
+    } catch (err) {
+        res.status(500).send('Error retrieving customers.');
+    }
 };
 
 const getCustomer = async (req, res) => {
     //#swagger.tags=['Customers']
-    const customer = await Customer.findById(req.params.id);
 
-    if (!customer) return res.status(404).send('The customer with the given ID was not found.');
-
-    res.send(customer);
+    try {
+        const customer = await Customer.findById(req.params.id);
+        if (!customer) return res.status(404).send('Customer not found.');
+        res.send(customer);
+    } catch (err) {
+        res.status(500).send('Error retrieving customer.');
+    }
 };
 
 // CREATE
 const createCustomer = async (req, res) => {
     //#swagger.tags=['Customers']
-
-    // const { error } = validateCustomer(req.body);
-    // if (error) return res.status(400).send(error.details[0].message);
     
-    let customer = new Customer({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        email: req.body.email,
-        isSubscribed: req.body.isSubscribed
-    });
-    customer = await customer.save();
+    try {
+        if (
+            !req.body.firstName ||
+            !req.body.lastName ||
+            !req.body.email ||
+            typeof req.body.isSubscribed !== 'boolean'
+        ) {
+            return res.status(400).send('Missing or invalid required fields.');
+        }
 
-    res.send(customer);
+        let customer = new Customer({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email,
+            isSubscribed: req.body.isSubscribed
+        });
+
+        customer = await customer.save();
+        res.status(201).send(customer);
+    } catch (err) {
+        res.status(500).send('Error creating customer.');
+    }
 };
 
 // UPDATE
 const updateCustomer = async (req, res) => {
     //#swagger.tags=['Customers']
 
-    // const { error } = validateCustomer(req.body);
-    // if (error) return res.status(400).send(error.details[0].message);
+    try {
+        if (
+            !req.body.firstName ||
+            !req.body.lastName ||
+            !req.body.email ||
+            typeof req.body.isSubscribed !== 'boolean'
+        ) {
+            return res.status(400).send('Missing or invalid required fields.');
+        }
 
-    const customer = await Customer.findByIdAndUpdate(
-        req.params.id,
-        {
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            email: req.body.email,
-            isSubscribed: req.body.isSubscribed
-        },
-        {
-            new: true
-        });
+        const customer = await Customer.findByIdAndUpdate(
+            req.params.id,
+            {
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                email: req.body.email,
+                isSubscribed: req.body.isSubscribed
+            },
+            { new: true }
+        );
 
-    if (!customer) return res.status(404).send('The customer with the given ID was not found.');
+        if (!customer) return res.status(404).send('Customer not found.');
 
-    res.send(customer);
+        res.send(customer);
+    } catch (err) {
+        res.status(500).send('Error updating customer.');
+    }
 };
 
 // DELETE
 const deleteCustomer = async (req, res) => {
     //#swagger.tags=['Customers']
-    const customer = await Customer.findByIdAndDelete(req.params.id);
 
-    if (!customer) return res.status(404).send('The customer with the given ID was not found.');
-
-    res.send(customer);
+    try {
+        const customer = await Customer.findByIdAndDelete(req.params.id);
+        if (!customer) return res.status(404).send('Customer not found.');
+        res.send(customer);
+    } catch (err) {
+        res.status(500).send('Error deleting customer.');
+    }
 };
-
-// function validateGenre(genre) {
-//     const schema = Joi.object({
-//         name: Joi.string().min(3).required()
-//     });
-//     return schema.validate(genre);
-// }
 
 module.exports = {
     getAllCustomers,
