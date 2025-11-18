@@ -23,11 +23,13 @@ const Customer = mongoose.model('Customer', customerSchema);
 
 // READ
 const getAllCustomers = async (req, res) => {
+    //#swagger.tags=['Customers']
     const customers = await Customer.find();
     res.send(customers);
 };
 
 const getCustomer = async (req, res) => {
+    //#swagger.tags=['Customers']
     const customer = await Customer.findById(req.params.id);
 
     if (!customer) return res.status(404).send('The customer with the given ID was not found.');
@@ -37,6 +39,8 @@ const getCustomer = async (req, res) => {
 
 // CREATE
 const createCustomer = async (req, res) => {
+    //#swagger.tags=['Customers']
+
     // const { error } = validateCustomer(req.body);
     // if (error) return res.status(400).send(error.details[0].message);
     
@@ -53,6 +57,8 @@ const createCustomer = async (req, res) => {
 
 // UPDATE
 const updateCustomer = async (req, res) => {
+    //#swagger.tags=['Customers']
+
     // const { error } = validateCustomer(req.body);
     // if (error) return res.status(400).send(error.details[0].message);
 
@@ -75,6 +81,7 @@ const updateCustomer = async (req, res) => {
 
 // DELETE
 const deleteCustomer = async (req, res) => {
+    //#swagger.tags=['Customers']
     const customer = await Customer.findByIdAndDelete(req.params.id);
 
     if (!customer) return res.status(404).send('The customer with the given ID was not found.');

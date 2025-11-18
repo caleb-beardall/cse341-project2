@@ -25,11 +25,13 @@ const Product = mongoose.model('Product', productSchema);
 
 // READ
 const getAllProducts = async (req, res) => {
+    //#swagger.tags=['Products']
     const products = await Product.find();
     res.send(products);
 };
 
 const getProduct = async (req, res) => {
+    //#swagger.tags=['Products']
     const product = await Product.findById(req.params.id);
 
     if (!product) return res.status(404).send('The product with the given ID was not found.');
@@ -39,6 +41,8 @@ const getProduct = async (req, res) => {
 
 // CREATE
 const createProduct = async (req, res) => {
+    //#swagger.tags=['Products']
+
     // const { error } = validateCustomer(req.body);
     // if (error) return res.status(400).send(error.details[0].message);
     
@@ -55,6 +59,8 @@ const createProduct = async (req, res) => {
 
 // UPDATE
 const updateProduct = async (req, res) => {
+    //#swagger.tags=['Products']
+
     // const { error } = validateCustomer(req.body);
     // if (error) return res.status(400).send(error.details[0].message);
 
@@ -77,6 +83,8 @@ const updateProduct = async (req, res) => {
 
 // DELETE
 const deleteProduct = async (req, res) => {
+    //#swagger.tags=['Products']
+    
     const product = await Product.findByIdAndDelete(req.params.id);
 
     if (!product) return res.status(404).send('The product with the given ID was not found.');
