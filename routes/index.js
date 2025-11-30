@@ -5,7 +5,8 @@ router.use('/', require('./swagger'));
 router.use('/products', require('./products'));
 router.use('/customers', require('./customers'));
 
-router.get('/login', passport.authenticate('github'), (req, res) => {});
+// router.get('/login', passport.authenticate('github'), (req, res) => {});
+router.get('/login', passport.authenticate('github', { scope: ['user:email'] }));
 
 router.get('/logout', function(req, res, next) {
     req.logout(function(err) {

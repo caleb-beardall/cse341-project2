@@ -35,17 +35,16 @@ app
     .use(cors({ origin: '*'}))
     .use('/', require('./routes'));
 
-    passport.use(new GitHubStrategy({
-        clientID: process.env.GITHUB_CLIENT_ID,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: process.env.CALLBACK_URL
-    },
-    function (accessToken, refreshToken, profile, done) {
-        //User.findOrCreate({ githubId: profile.id }, function(err, user) {
-            return done(null, profile);
-        //});
-    }
-));
+passport.use(new GitHubStrategy({
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: process.env.CALLBACK_URL
+},
+function (accessToken, refreshToken, profile, done) {
+    //User.findOrCreate({ githubId: profile.id }, function(err, user) {
+        return done(null, profile);
+    //});
+}));
 
 passport.serializeUser((user, done) => {
     done(null, user);
@@ -54,14 +53,22 @@ passport.deserializeUser((user, done) => {
     done(null, user);
 });
 
-app.get('/', (req, res) => { res.send(req.session.user !== undefined ? `Logged in as ${req.session.user.displayName}` : "Logged Out") });
-
-app.get('/github/callback', passport.authenticate('github', {
-    failureRedirect: '/api-docs', session: false
-}), (req, res) => {
-    req.session.user = req.user;
-    res.redirect('/');
+app.get('/', (req, res) => {
+    if (req.session.user) {
+        res.send(`Logged in as ${req.session.user.displayName}`);
+    } else {
+        res.send('Logged out');
+    }
 });
+
+app.get(
+    '/github/callback',
+    passport.authenticate('github', { failureRedirect: '/' }),
+    (req, res) => {
+        req.session.user = req.user;
+        res.redirect('/');
+    }
+);
 
 mongodb.initDb((err) => {
     if (err) {
@@ -71,4 +78,3 @@ mongodb.initDb((err) => {
         console.log(`Connected to DB and listenting on port ${port}.`);
     }
 });
-
