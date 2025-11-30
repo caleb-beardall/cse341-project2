@@ -15,6 +15,20 @@ const productSchema = new mongoose.Schema({
         min: 0,
         required: true
     },
+    batteryLife: {
+        type: Number,
+        min: 0,
+        required: true
+    },
+    displaySize: {
+        type: Number,
+        min: 0,
+        required: true
+    },
+    chip: {
+        type: String,
+        required: true
+    },
     isInStock: {
         type: Boolean,
         required: true

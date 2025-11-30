@@ -41,9 +41,12 @@ POST http://localhost:3000/products HTTP/1.1
 content-type: application/json
 
 {
-    "name": "iPhone Air",
+    "name": "iPhone 17 Pro",
     "category": "phone",
-    "price": "999",
+    "price": 1099,
+    "batteryLife": 33,
+    "displaySize": 6.3,
+    "chip": "A19 Pro chip with 6‑core GPU",
     "isInStock": true
 }
 
@@ -52,11 +55,46 @@ PUT http://localhost:3000/products/6918f8bc796e86ad2e85c5f8 HTTP/1.1
 content-type: application/json
 
 {
-    "name": "iPhone 17 Pro",
+    "name": "iPhone 17 Pro Max",
     "category": "phone",
-    "price": "1099",
+    "price": "1199",
+    "batteryLife": 39,
+    "displaySize": 6.9,
+    "chip": "A19 Pro chip with 6‑core GPU",
     "isInStock": true
 }
+
+# {
+#     "name": "iPhone 16",
+#     "category": "phone",
+#     "price": "699",
+#     "batteryLife": 22,
+#     "displaySize": 6.1,
+#     "chip": "A18",
+#     "isInStock": true
+# }
+
+# {
+#     "name": "iPhone 17",
+#     "category": "phone",
+#     "price": "799",
+#     "batteryLife": 30,
+#     "displaySize": 6.3,
+#     "chip": "A19 Pro chip with 5-core GPU",
+#     "isInStock": true
+# }
+
+# {
+#     "name": "iPhone Air",
+#     "category": "phone",
+#     "price": "999",
+#     "batteryLife": 27,
+#     "displaySize": 6.5,
+#     "chip": "A19 Pro chip with 5-core GPU",
+#     "isInStock": true
+# }
+
+
 
 ### DELETE product
 DELETE http://localhost:3000/products/6918f905796e86ad2e85c5fd HTTP/1.1

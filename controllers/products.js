@@ -25,40 +25,46 @@ const getProduct = async (req, res) => {
     }
 };
 
-// CREATE
 const createProduct = async (req, res) => {
     //#swagger.tags=['Products']
-
     try {
+        const { name, category, price, batteryLife, displaySize, chip, isInStock } = req.body;
+
         if (
-            !req.body.name ||
-            !req.body.category ||
-            req.body.price === undefined ||
-            typeof req.body.isInStock !== 'boolean'
+            !name ||
+            !category ||
+            price === undefined ||
+            batteryLife === undefined ||
+            displaySize === undefined ||
+            !chip ||
+            typeof isInStock !== 'boolean'
         ) {
             return res.status(400).send('Missing or invalid required fields.');
         }
 
         const validCategories = ['laptop', 'desktop', 'phone', 'tablet'];
-        if (!validCategories.includes(req.body.category)) {
+        if (!validCategories.includes(category)) {
             return res.status(400).send('Invalid category.');
         }
 
-        if (typeof req.body.price !== 'number' || req.body.price < 0) {
-            return res.status(400).send('Price must be a number >= 0.');
-        }
-
-        let product = new Product({
-            name: req.body.name,
-            category: req.body.category,
-            price: req.body.price,
-            isInStock: req.body.isInStock
+        const product = new Product({
+            name,
+            category,
+            price,
+            batteryLife,
+            displaySize,
+            chip,
+            isInStock
         });
 
-        product = await product.save();
-        res.status(201).send(product);
+        await product.validate();
+        const savedProduct = await product.save();
+        res.status(201).send(savedProduct);
 
     } catch (err) {
+        if (err.name === 'ValidationError') {
+            return res.status(400).send(err.message);
+        }
         res.status(500).send('Error creating product.');
     }
 };
@@ -66,43 +72,48 @@ const createProduct = async (req, res) => {
 // UPDATE
 const updateProduct = async (req, res) => {
     //#swagger.tags=['Products']
-
     try {
+        const { name, category, price, batteryLife, displaySize, chip, isInStock } = req.body;
+
         if (
-            !req.body.name ||
-            !req.body.category ||
-            req.body.price === undefined ||
-            typeof req.body.isInStock !== 'boolean'
+            !name ||
+            !category ||
+            price === undefined ||
+            batteryLife === undefined ||
+            displaySize === undefined ||
+            !chip ||
+            typeof isInStock !== 'boolean'
         ) {
             return res.status(400).send('Missing or invalid required fields.');
         }
 
         const validCategories = ['laptop', 'desktop', 'phone', 'tablet'];
-        if (!validCategories.includes(req.body.category)) {
+        if (!validCategories.includes(category)) {
             return res.status(400).send('Invalid category.');
-        }
-
-        if (typeof req.body.price !== 'number' || req.body.price < 0) {
-            return res.status(400).send('Price must be a number >= 0.');
         }
 
         const product = await Product.findByIdAndUpdate(
             req.params.id,
             {
-                name: req.body.name,
-                category: req.body.category,
-                price: req.body.price,
-                isInStock: req.body.isInStock
+                name,
+                category,
+                price,
+                batteryLife,
+                displaySize,
+                chip,
+                isInStock
             },
-            { new: true }
+            { new: true, runValidators: true }
         );
 
-        if (!product)
-            return res.status(404).send('Product not found.');
+        if (!product) return res.status(404).send('Product not found.');
 
         res.send(product);
 
     } catch (err) {
+        if (err.name === 'ValidationError') {
+            return res.status(400).send(err.message);
+        }
         res.status(500).send('Error updating product.');
     }
 };
